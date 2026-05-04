@@ -1,0 +1,48 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Job {
+  id          String     @id @default(cuid())
+  title       String
+  company     String?
+  location    String?
+  description String
+  published   Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  interests   Interest[]
+
+  @@index([published, createdAt])
+}
+
+model News {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  imageUrl  String?
+
+  @@index([published, createdAt])
+}
+
+model Interest {
+  id        String   @id @default(cuid())
+  jobId     String
+  fullName  String
+  phone     String
+  position  String?
+  status    String   @default("new")
+  createdAt DateTime @default(now())
+  job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([jobId, createdAt])
+  @@index([status, createdAt])
+}
